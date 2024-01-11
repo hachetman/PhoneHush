@@ -3,13 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "bsp/board.h"
 #include "tusb.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "usb_descriptors.h"
-
 #include "GC9A01A.h"
+#include "CST816S.h"
 
 void hid_task(void);
 void cdc_task(void);
@@ -26,17 +25,20 @@ void core1_entry() {
 /*------------- MAIN -------------*/
 int main(void)
 {
-    board_init();
     char buffer[50];
+    CST816S_Touch touch_res;
+    uint8_t gesture;
     tusb_init();
     stdio_init_all();
     multicore_launch_core1(core1_entry);
     serial_print("Initializing\r\n");
     GC9A01A display;
+    CST816S touch;
     display.init();
     struct GC9A01_frame frame = {{0,0},{239,239}};
     display.set_frame(frame);
     uint8_t color[3];
+    touch.init(CST816S_Mode::CST816S_ALL_Mode);
     // Triangle
     color[0] = 0xFF;
     color[1] = 0xFF;
@@ -57,6 +59,13 @@ int main(void)
     while (1)
     {
         sleep_ms(1000);
+        gesture = touch.get_Gesture();
+        snprintf(buffer, 20, "Gesture: %03d\r\n", gesture);
+        serial_print(buffer);
+        touch_res = touch.get_Point();
+        snprintf(buffer, 25, "x: %03d; y: %03d, I: %1d\r\n", touch_res.x_point, touch_res.y_point, touch_res.interrupt);
+        serial_print(buffer);
+        serial_print("hello worlding\r\n");
     }
 }
 
