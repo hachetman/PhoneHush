@@ -9,6 +9,7 @@
 #include "pico/multicore.h"
 #include "usb_descriptors.h"
 
+#include "GC9A01A.h"
 
 void hid_task(void);
 void cdc_task(void);
@@ -26,14 +27,36 @@ void core1_entry() {
 int main(void)
 {
     board_init();
+    char buffer[50];
     tusb_init();
     stdio_init_all();
     multicore_launch_core1(core1_entry);
+    serial_print("Initializing\r\n");
+    GC9A01A display;
+    display.init();
+    struct GC9A01_frame frame = {{0,0},{239,239}};
+    display.set_frame(frame);
+    uint8_t color[3];
+    // Triangle
+    color[0] = 0xFF;
+    color[1] = 0xFF;
+    for (int x = 0; x < 240; x++) {
+        for (int y = 0; y < 240; y++) {
+            if (x < y) {
+                color[2] = 0xFF;
+            } else {
+                color[2] = 0x00;
+            }
+            if (x == 0 && y == 0) {
+                display.write(color, sizeof(color));
+            } else {
+                display.write_continue(color, sizeof(color));
+            }
+        }
+    }
     while (1)
     {
         sleep_ms(1000);
-
-        serial_print("hello world\n");
     }
 }
 

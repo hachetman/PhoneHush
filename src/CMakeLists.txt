@@ -3,6 +3,7 @@ add_executable(PhoneHush)
 target_sources(PhoneHush PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/main.cpp
   ${CMAKE_CURRENT_LIST_DIR}/usb_descriptors.c
+  ${CMAKE_CURRENT_LIST_DIR}/GC9A01A.cpp
 )
 
 # Make sure TinyUSB can find tusb_config.h
