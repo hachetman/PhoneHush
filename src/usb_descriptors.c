@@ -562,7 +562,7 @@ char const* string_desc_arr [] =
 {
   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
   "TinyUSB",                     // 1: Manufacturer
-  "TinyUSB Device",              // 2: Product
+  "PhoneHush",                   // 2: Product
   serial,                        // 3: Serials, uses the flash ID
 };
 
