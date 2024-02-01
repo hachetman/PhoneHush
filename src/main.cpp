@@ -1,14 +1,20 @@
 
+#include <cstdint>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <utility>
 
+#include "hardware/timer.h"
 #include "tusb.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "usb_descriptors.h"
 #include "GC9A01A.h"
+#include "framebuffer.h"
 #include "CST816S.h"
+#include "../images/free.h"
+#include "../images/in_call.h"
 
 void hid_task(void);
 void cdc_task(void);
@@ -27,13 +33,15 @@ int main(void)
     char buffer[50];
     CST816S_Touch touch_res;
     uint8_t gesture;
+    set_sys_clock_khz(133000, true);
     tusb_init();
     stdio_init_all();
     multicore_launch_core1(core1_entry);
     serial_print("Initializing\r\n");
     GC9A01A display;
-    CST816S touch;
     display.init();
+    framebuffer framebuffer(display);
+    CST816S touch;
     struct GC9A01_frame frame = {{0,0},{239,239}};
     display.set_frame(frame);
     uint8_t color[3];
@@ -41,20 +49,16 @@ int main(void)
     // Triangle
     color[0] = 0xFF;
     color[1] = 0xFF;
-    for (int x = 0; x < 240; x++) {
-        for (int y = 0; y < 240; y++) {
-            if (x < y) {
-                color[2] = 0xFF;
-            } else {
-                color[2] = 0x00;
-            }
-            if (x == 0 && y == 0) {
-                display.write(color, sizeof(color));
-            } else {
-                display.write_continue(color, sizeof(color));
-            }
-        }
-    }
+    color[2] = 0x00;
+
+    framebuffer.fill_display(free_image);
+    framebuffer.update_display();
+    sleep_ms(1000);
+    framebuffer.test();
+    framebuffer.update_display();
+    sleep_ms(1000);
+    framebuffer.fill_rect(in_call_image, 40, 30, 80, 80);
+    framebuffer.update_display();
     while (1)
     {
         sleep_ms(1000);
@@ -93,26 +97,10 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
     (void) instance;
-    printf("got a report");
-    if (report_type == HID_REPORT_TYPE_OUTPUT)
-    {
-        // Set keyboard LED e.g Capslock, Numlock etc...
-        if (report_id == REPORT_ID_KEYBOARD)
-        {
-            // bufsize should be (at least) 1
-            if ( bufsize < 1 ) return;
+    char buffer2[50];
+    snprintf(buffer2, 49, "got a report, report_type: %d, report_id %d:\r\n", report_type, report_id);
+    serial_print(buffer2);
 
-            uint8_t const kbd_leds = buffer[0];
-
-            if (kbd_leds & KEYBOARD_LED_CAPSLOCK)
-            {
-                board_led_write(true);
-            }else
-            {
-                board_led_write(false);
-            }
-        }
-    }
 }
 
 //--------------------------------------------------------------------+
