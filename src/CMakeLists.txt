@@ -5,7 +5,6 @@ target_sources(PhoneHush PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/usb_descriptors.c
   ${CMAKE_CURRENT_LIST_DIR}/GC9A01A.cpp
   ${CMAKE_CURRENT_LIST_DIR}/CST816S.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/framebuffer.cpp
 )
 
 # Make sure TinyUSB can find tusb_config.h
