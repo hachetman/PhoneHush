@@ -6,27 +6,29 @@
 #include <utility>
 
 #include "hardware/timer.h"
+#include "pico/time.h"
 #include "tusb.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "usb_descriptors.h"
 #include "GC9A01A.h"
-#include "framebuffer.h"
 #include "CST816S.h"
-#include "../images/free.h"
-#include "../images/in_call.h"
-
+#include "lvgl.h"
 void hid_task(void);
 void cdc_task(void);
 void serial_print(const char* str);
 bool serialReady = false;
-
+GC9A01A display;
 void core1_entry() {
     while (1) {
         tud_task();
     }
 }
-
+void my_flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map)
+{
+    display.update_display();
+    lv_display_flush_ready(disp);
+}
 /*------------- MAIN -------------*/
 int main(void)
 {
@@ -38,32 +40,33 @@ int main(void)
     stdio_init_all();
     multicore_launch_core1(core1_entry);
     serial_print("Initializing\r\n");
-    GC9A01A display;
+
     display.init();
-    framebuffer framebuffer(display);
+    lv_init();
+    lv_display_t * lv_display = lv_display_create(240, 240);
+    lv_display_set_buffers(lv_display, display.buffer, NULL, sizeof(display.buffer), LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_flush_cb(lv_display, my_flush_cb);
     CST816S touch;
     struct GC9A01_frame frame = {{0,0},{239,239}};
     display.set_frame(frame);
-    uint8_t color[3];
     touch.init(CST816S_Mode::CST816S_ALL_Mode);
-    // Triangle
-    color[0] = 0xFF;
-    color[1] = 0xFF;
-    color[2] = 0x00;
 
-    framebuffer.fill_display(free_image);
-    framebuffer.update_display();
-    sleep_ms(1000);
-    framebuffer.test();
-    framebuffer.update_display();
-    sleep_ms(1000);
-    framebuffer.fill_rect(in_call_image, 40, 30, 80, 80);
-    framebuffer.update_display();
+    /*Change the active screen's background color*/
+    lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x1f), LV_PART_MAIN);
+
+    /*Create a white label, set its text and align it to the center*/
+    lv_obj_t * label = lv_label_create(lv_screen_active());
+    lv_label_set_text(label, "Hello world");
+    lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    lv_refr_now(NULL);
     while (1)
     {
+        lv_refr_now(NULL);
         sleep_ms(1000);
         gesture = touch.get_Gesture();
         snprintf(buffer, 20, "Gesture: %03d\r\n", gesture);
+        serial_print("hello worlding\r\n");
         serial_print(buffer);
         touch_res = touch.get_Point();
         snprintf(buffer, 25, "x: %03d; y: %03d, I: %1d\r\n", touch_res.x_point, touch_res.y_point, touch_res.interrupt);

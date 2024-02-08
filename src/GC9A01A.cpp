@@ -355,22 +355,22 @@ auto GC9A01A::spi_tx(uint8_t *data, size_t len) -> void
 
 auto GC9A01A::delay(uint16_t ms) -> void
 {
-    sleep_ms(1000);
+    sleep_ms(ms);
 
 }
+
 auto GC9A01A::write_pixel(uint8_t *color, uint8_t x, uint8_t y) -> void
 {
-    buffer[(x * 240 + y) * 3  + 0] = color[0];
-    buffer[(x * 240 + y) * 3  + 1] = color[1];
-    buffer[(x * 240 + y) * 3  + 2] = color[2];
+        buffer[(x * 240 + y) * 3 ] = color[0];
+        buffer[(x * 240 + y) * 3 + 1] = color[1];
+        buffer[(x * 240 + y) * 3 + 2] = color[2];
+
 }
-auto GC9A01A::write_pixel(uint32_t color, uint8_t x, uint8_t y) -> void
+auto GC9A01A::write_pixel(uint16_t color, uint8_t x, uint8_t y) -> void
 {
-    if ((color >> 24) & 0xff) {
-        buffer[(x * 240 + y) * 3  + 0] = color & 0xff;
-        buffer[(x * 240 + y) * 3  + 1] = (color >> 8) & 0xff;
-        buffer[(x * 240 + y) * 3  + 2] = (color >> 16) & 0xff;
-    }
+        buffer[(x * 240 + y) * 3 ] = color & 0xff;
+        buffer[(x * 240 + y) * 3 + 1] = (color >> 8) & 0xff;
+
 }
 auto GC9A01A::update_display() -> void
 {

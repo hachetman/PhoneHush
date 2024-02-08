@@ -7,15 +7,18 @@
 #include "hardware/spi.h"
 #include "display.h"
 
-class GC9A01A : public display{
+class GC9A01A {
 public:
 auto init(void) -> void;
 auto set_frame(struct GC9A01_frame frame) -> void;
 auto write(uint8_t *data, std::size_t len) -> void;
 auto write_continue(uint8_t *data, std::size_t len) -> void;
 auto write_pixel(uint8_t *color, uint8_t x, uint8_t y) -> void;
-auto write_pixel(uint32_t color, uint8_t x, uint8_t y) -> void;
+auto write_pixel(uint16_t color, uint8_t x, uint8_t y) -> void;
 auto update_display() -> void;
+static const uint8_t HEIGHT = 240;
+static const uint8_t WIDTH = 240;
+uint8_t buffer[HEIGHT*WIDTH*3];
 
 private:
 auto set_reset(uint8_t val) -> void;
@@ -28,8 +31,6 @@ auto write_data(uint8_t *data, std::size_t len) -> void;
 auto write_byte(uint8_t val) -> void;
 
 spi_inst_t *SPI_PORT = spi1;
-static const uint8_t HEIGHT = 240;
-static const uint8_t WIDTH = 240;
 const uint8_t RESET_PIN = 13;
 const uint8_t DC_PIN = 8;
 const uint8_t CS_PIN = 9;
@@ -46,7 +47,7 @@ const uint8_t COLOR_MODE__16_BIT = 0x05;
 const uint8_t COLOR_MODE__18_BIT = 0x06;
 const uint8_t MEM_WR_CONT = 0x3C;
 const uint8_t ORIENTATION = 2;
-uint8_t buffer[HEIGHT*WIDTH*3];
+
 };
 
 struct GC9A01_point {
