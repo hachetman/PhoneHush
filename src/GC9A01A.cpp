@@ -355,7 +355,7 @@ auto GC9A01A::spi_tx(uint8_t *data, size_t len) -> void
 
 auto GC9A01A::delay(uint16_t ms) -> void
 {
-    sleep_ms(1000);
+    sleep_ms(ms);
 
 }
 auto GC9A01A::write_pixel(uint8_t *color, uint8_t x, uint8_t y) -> void
