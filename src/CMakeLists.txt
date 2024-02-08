@@ -7,6 +7,9 @@ target_sources(PhoneHush PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/CST816S.cpp
 )
 
+ # print memory usage, enable all warnings
+target_link_options(PhoneHush PRIVATE -Xlinker --print-memory-usage)
+target_compile_options(PhoneHush PRIVATE -Wall -Wextra)
 # Make sure TinyUSB can find tusb_config.h
 target_include_directories(PhoneHush PUBLIC
   ${CMAKE_CURRENT_LIST_DIR})
