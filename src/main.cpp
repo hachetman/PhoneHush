@@ -11,7 +11,6 @@
 #include "pico/multicore.h"
 #include "usb_descriptors.h"
 #include "GC9A01A.h"
-#include "framebuffer.h"
 #include "CST816S.h"
 #include "../images/free.h"
 #include "../images/in_call.h"
@@ -40,25 +39,19 @@ int main(void)
     serial_print("Initializing\r\n");
     GC9A01A display;
     display.init();
-    framebuffer framebuffer(display);
     CST816S touch;
     struct GC9A01_frame frame = {{0,0},{239,239}};
     display.set_frame(frame);
-    uint8_t color[3];
     touch.init(CST816S_Mode::CST816S_ALL_Mode);
-    // Triangle
-    color[0] = 0xFF;
-    color[1] = 0xFF;
-    color[2] = 0x00;
 
-    framebuffer.fill_display(free_image);
-    framebuffer.update_display();
-    sleep_ms(1000);
-    framebuffer.test();
-    framebuffer.update_display();
-    sleep_ms(1000);
-    framebuffer.fill_rect(in_call_image, 40, 30, 80, 80);
-    framebuffer.update_display();
+    display.fill_display(free_image);
+    display.update_display();
+    //sleep_ms(1000);
+    //display.test();
+    //display.update_display();
+    //sleep_ms(1000);
+    //display.fill_rect(in_call_image, 40, 30, 80, 80);
+    //display.update_display();
     while (1)
     {
         sleep_ms(1000);

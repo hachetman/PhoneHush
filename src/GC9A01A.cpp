@@ -376,3 +376,38 @@ auto GC9A01A::update_display() -> void
 {
     write(buffer, 240*240*3);
 }
+
+auto GC9A01A::test() -> void
+{
+    uint8_t color[3];
+    color[0] = 0xFF;
+    color[1] = 0xFF;
+    color[2] = 0x00;
+    for (int x = 0; x < 240; x++) {
+        for (int y = 0; y < 240; y++) {
+            write_pixel(color, x, y);
+        }
+    }
+}
+
+auto GC9A01A::fill_display(const uint32_t *buffer) -> void
+{
+    uint32_t counter = 0;
+    for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < HEIGHT; y++) {
+            write_pixel(buffer[counter++], x, y);
+        }
+    }
+}
+
+auto GC9A01A::fill_rect(const uint32_t *buffer, uint8_t x_start,
+                            uint8_t y_start, uint8_t x_size, uint8_t y_size)
+    -> void
+{
+    uint32_t counter = 0;
+    for (int x = x_start; x < x_start + x_size; x++) {
+        for (int y = y_start; y < y_start + y_size; y++) {
+            write_pixel(buffer[counter++], x, y);
+        }
+    }
+}

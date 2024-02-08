@@ -5,9 +5,8 @@
 
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
-#include "display.h"
 
-class GC9A01A : public display{
+class GC9A01A  {
 public:
 auto init(void) -> void;
 auto set_frame(struct GC9A01_frame frame) -> void;
@@ -16,6 +15,10 @@ auto write_continue(uint8_t *data, std::size_t len) -> void;
 auto write_pixel(uint8_t *color, uint8_t x, uint8_t y) -> void;
 auto write_pixel(uint32_t color, uint8_t x, uint8_t y) -> void;
 auto update_display() -> void;
+auto test() -> void;
+auto fill_display(const uint32_t *buffer) -> void;
+auto fill_rect(const uint32_t *buffer, uint8_t x_start, uint8_t y_start,
+                   uint8_t x_size, uint8_t y_size) -> void;
 
 private:
 auto set_reset(uint8_t val) -> void;
