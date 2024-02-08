@@ -14,7 +14,7 @@ target_compile_options(PhoneHush PRIVATE -Wall -Wextra)
 target_include_directories(PhoneHush PUBLIC
   ${CMAKE_CURRENT_LIST_DIR})
 
-pico_enable_stdio_usb(PhoneHush 1)
+pico_enable_stdio_usb(PhoneHush 0)
 pico_enable_stdio_uart(PhoneHush 0)
 # Import pico_stdlib which imports commonly used features
 target_link_libraries(PhoneHush PUBLIC pico_stdlib pico_unique_id tinyusb_device
