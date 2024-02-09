@@ -21,7 +21,7 @@ def convert(file_name):
         for y in range(image_size[1]):
             if (y % 8 == 0):
                 include_file.write("\n")
-            value = convert_pixel(pix[y,x])
+            value = convert_pixel(pix[x,y])
             if (x == (image_size[0] -1)  and y == (image_size[1]- 1)):
                 include_file.write(" 0x{:08x}".format(value))
             else:
