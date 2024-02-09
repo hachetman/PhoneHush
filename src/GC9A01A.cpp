@@ -374,7 +374,7 @@ auto GC9A01A::write_pixel(uint32_t color, uint8_t x, uint8_t y) -> void
 }
 auto GC9A01A::update_display() -> void
 {
-    write(buffer, 240*240*3);
+    write(buffer, HEIGHT*WIDTH*3);
 }
 
 auto GC9A01A::test() -> void
@@ -383,8 +383,8 @@ auto GC9A01A::test() -> void
     color[0] = 0xFF;
     color[1] = 0xFF;
     color[2] = 0x00;
-    for (int x = 0; x < 240; x++) {
-        for (int y = 0; y < 240; y++) {
+    for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < HEIGHT; y++) {
             write_pixel(color, x, y);
         }
     }
