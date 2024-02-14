@@ -9,7 +9,7 @@
 
 class GC9A01A  {
 public:
-auto init(void) -> void;
+auto init(void) -> uint;
 auto set_frame(struct GC9A01_frame frame) -> void;
 auto write(uint8_t *data, std::size_t len) -> void;
 auto write_continue(uint8_t *data, std::size_t len) -> void;

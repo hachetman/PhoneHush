@@ -27,7 +27,7 @@ auto GC9A01A::write_byte(uint8_t val) -> void
     write_data(&val, sizeof(val));
 }
 
-auto GC9A01A::init(void) -> void
+auto GC9A01A::init(void) -> uint
 {
     // It seem it is rounded to the next possible lower value,
     // so 63 MHZ result in 62.5 MHz SPI freuqency at 125 MHz
@@ -300,6 +300,7 @@ auto GC9A01A::init(void) -> void
     delay(120);
     write_command(0x29);
     delay(20);
+    return retval;
 
 }
 
