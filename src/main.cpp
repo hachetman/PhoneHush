@@ -16,12 +16,13 @@
 #include "CST816S.h"
 #include "../images/free.h"
 #include "../images/in_call.h"
-
+#include "../images/mic_muted.h"
+#include "../images/mic.h"
 void hid_task(void);
 void cdc_task(void);
 void serial_print(const char* str);
 bool serialReady = false;
-
+GC9A01A display;
 void core1_entry() {
     while (1) {
         tud_task();
@@ -55,22 +56,26 @@ int main(void)
 
     display.fill_display(free_image);
     display.update_display();
-    //sleep_ms(1000);
-    //display.test();
-    //display.update_display();
-    //sleep_ms(1000);
-    //display.fill_rect(in_call_image, 40, 30, 80, 80);
-    //display.update_display();
     while (1)
     {
-        sleep_ms(1000);
+        sleep_ms(100);
         gesture = touch.get_Gesture();
-        snprintf(buffer, 20, "Gesture: %03d\r\n", gesture);
-        serial_print(buffer);
         touch_res = touch.get_Point();
-        snprintf(buffer, 25, "x: %03d; y: %03d, I: %1d\r\n", touch_res.x_point, touch_res.y_point, touch_res.interrupt);
-        serial_print(buffer);
-        serial_print("hello worlding\r\n");
+        if (touch_res.interrupt == 0) {
+            touch_happened = 0;
+        }
+        if ((touch_res.y_point < 120) & touch_res.interrupt & (touch_happened == 0)) {
+            uint8_t report = 3;
+            tud_hid_report(0x20, &report, 1);
+            report = 1;
+            tud_hid_report(0x20, &report, 1);
+            touch_happened = 1;
+        }
+        if ((touch_res.y_point > 120) & touch_res.interrupt & (touch_happened == 0)) {
+            uint8_t report = 0;
+            tud_hid_report(0x20, &report, 1);
+            touch_happened = 1;
+        }
     }
 }
 
@@ -99,10 +104,29 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
     (void) instance;
-    char buffer2[50];
-    snprintf(buffer2, 49, "got a report, report_type: %d, report_id %d:\r\n", report_type, report_id);
+    char buffer2[80];
+    snprintf(buffer2, 80, "got a report, report_type: %d, report_id %d, buff %x:\r\n", report_type, report_id, buffer[0]);
     serial_print(buffer2);
-
+    if ((report_id == 36) && (*buffer == 1)) {
+        display.fill_rect(in_call_image, 0, 0, 240, 240);
+        display.update_display();
+        uint8_t report = 0;
+        tud_hid_report(0x20, &report, 1);
+    }
+    if ((report_id == 36) && (*buffer == 0)) {
+        display.fill_rect(free_image, 0, 0, 240, 240);
+        uint8_t report = 0;
+        tud_hid_report(0x20, &report, 1);
+        display.update_display();
+    }
+    if ((report_id == 35) && (*buffer == 1)) {
+        display.fill_rect(mic_muted_image, 35, 120, 170, 85);
+        display.update_display();
+    }
+    if ((report_id == 35) && (*buffer == 0)) {
+        display.fill_rect(mic_image, 35, 120, 170, 85);
+        display.update_display();
+    }
 }
 
 //--------------------------------------------------------------------+
@@ -132,7 +156,7 @@ void cdc_task(void)
         if ( tud_cdc_available() )
         {
             // read data
-            char buf[64];
+            char buf[80];
             uint32_t count = tud_cdc_read(buf, sizeof(buf));
             (void) count;
 

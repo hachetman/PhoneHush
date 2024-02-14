@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "pico/stdlib.h"
+
 #include "hardware/spi.h"
 #include "hardware/dma.h"
 
