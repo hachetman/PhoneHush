@@ -3,7 +3,8 @@
 #include <type_traits>
 
 
-#define ORIENTATION 2   // Set the display orientation 0,1,2,3
+
+#define ORIENTATION 0   // Set the display orientation 0,1,2,3
 
 auto GC9A01A::write_command(uint8_t cmd) ->void
 {
