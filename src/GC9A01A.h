@@ -5,6 +5,7 @@
 
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+#include "hardware/dma.h"
 
 class GC9A01A  {
 public:
@@ -29,6 +30,7 @@ auto spi_tx(uint8_t *data, std::size_t len) -> void;
 auto write_command(uint8_t cmd) -> void;
 auto write_data(uint8_t *data, std::size_t len) -> void;
 auto write_byte(uint8_t val) -> void;
+const uint dma_tx = dma_claim_unused_channel(true);
 
 spi_inst_t *SPI_PORT = spi1;
 static const uint8_t HEIGHT = 240;

@@ -374,7 +374,20 @@ auto GC9A01A::write_pixel(uint32_t color, uint8_t x, uint8_t y) -> void
 }
 auto GC9A01A::update_display() -> void
 {
-    write(buffer, HEIGHT*WIDTH*3);
+    write_command(MEM_WR);
+    set_data_command(1);
+    set_chip_select(0);
+    dma_channel_config c = dma_channel_get_default_config(dma_tx);
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
+    channel_config_set_dreq(&c, spi_get_dreq(SPI_PORT, true));
+    dma_channel_configure(dma_tx, &c,
+                          &spi_get_hw(SPI_PORT)->dr, // write address
+                          buffer, // read address
+                          HEIGHT*WIDTH*3, // element count (each element is of size transfer_data_size)
+                          true); // don't start yet
+    dma_channel_wait_for_finish_blocking(dma_tx);
+    set_chip_select(1);
+//
 }
 
 auto GC9A01A::test() -> void
