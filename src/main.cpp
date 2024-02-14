@@ -6,10 +6,12 @@
 #include <utility>
 
 #include "hardware/timer.h"
+#include "pico/time.h"
 #include "tusb.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "usb_descriptors.h"
+#include "hardware/clocks.h"
 #include "GC9A01A.h"
 #include "CST816S.h"
 #include "../images/free.h"
@@ -30,15 +32,22 @@ void core1_entry() {
 int main(void)
 {
     char buffer[50];
+    bool touch_happened=0;
     CST816S_Touch touch_res;
     uint8_t gesture;
-    set_sys_clock_khz(133000, true);
+    set_sys_clock_khz(125000, true);
+
     tusb_init();
     stdio_init_all();
     multicore_launch_core1(core1_entry);
     serial_print("Initializing\r\n");
-    GC9A01A display;
-    display.init();
+    clock_configure(clk_peri,
+                0,
+                CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLK_SYS,
+                125 * MHZ,
+                125 * MHZ);
+    uint f_clk_peri = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_PERI);
+    uint baudrate = display.init();
     CST816S touch;
     struct GC9A01_frame frame = {{0,0},{239,239}};
     display.set_frame(frame);
