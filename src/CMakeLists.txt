@@ -25,9 +25,7 @@ pico_add_extra_outputs(PhoneHush)
 
 # Have a command to flash
 add_custom_target(flash
-    COMMAND ${CMAKE_SOURCE_DIR}/scripts/reset.py /dev/tty.usbmodem1102
-    COMMAND sleep 1
-    COMMAND picotool load PhoneHush.elf
-    COMMAND picotool reboot
-    DEPENDS ${MAIN_BIN_FILE}
+        COMMAND picotool load PhoneHush.uf2
+        COMMAND picotool reboot
+        DEPENDS ${MAIN_BIN_FILE}
 )
