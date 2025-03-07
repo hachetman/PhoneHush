@@ -33,7 +33,6 @@ void core1_entry() {
 
 /*------------- MAIN -------------*/
 int main() {
-    char buffer[50];
     bool touch_happened = false;
     CST816S_Touch touch_res;
     uint8_t gesture;
