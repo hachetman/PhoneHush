@@ -21,6 +21,8 @@ void cdc_task();
 void serial_print(const char *str);
 
 bool serialReady = false;
+bool mic_muted = false;
+bool in_call = false;
 GC9A01A display;
 
 void core1_entry() {
@@ -100,29 +102,45 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
                            uint16_t bufsize) {
     (void) instance;
     char buffer2[80];
-    snprintf(buffer2, 80, "got a report, report_type: %d, report_id %d, buff %x:\r\n", report_type, report_id,
-             buffer[0]);
+    snprintf(buffer2, 80, "got a report, report_type: %d, report_id %d, buff %x:, bufsize: %x\r\n", report_type,
+             report_id,
+             buffer[0], bufsize);
     serial_print(buffer2);
     if ((report_id == 36) && (*buffer == 1)) {
-        display.fill_rect(in_call_image, 0, 0, 240, 240);
-        display.update_display();
+        in_call = true;
         uint8_t report = 0;
         tud_hid_report(0x20, &report, 1);
     }
     if ((report_id == 36) && (*buffer == 0)) {
-        display.fill_rect(free_image, 0, 0, 240, 240);
+        in_call = false;
         uint8_t report = 0;
         tud_hid_report(0x20, &report, 1);
-        display.update_display();
+
     }
-    if ((report_id == 35) && (*buffer == 1)) {
-        display.fill_rect(mic_muted_image, 35, 120, 170, 85);
-        display.update_display();
+    if (report_id == 35) {
+        if (*buffer == 1) {
+            mic_muted = true;
+        } else {
+            mic_muted = false;
+        }
     }
-    if ((report_id == 35) && (*buffer == 0)) {
-        display.fill_rect(mic_image, 35, 120, 170, 85);
+    if (in_call) {
+        display.fill_rect(in_call_image, 0, 0, 240, 240);
         display.update_display();
+        if (mic_muted) {
+            display.fill_rect(mic_muted_image, 35, 120, 170, 85);
+            display.update_display();
+        } else {
+            display.fill_rect(mic_image, 35, 120, 170, 85);
+            display.update_display();
+        }
+    } else {
+        display.fill_rect(free_image, 0, 0, 240, 240);
+        display.update_display();
+
     }
+
+
 }
 
 //--------------------------------------------------------------------+
