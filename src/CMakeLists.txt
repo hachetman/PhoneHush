@@ -18,7 +18,7 @@ pico_enable_stdio_usb(PhoneHush 0)
 pico_enable_stdio_uart(PhoneHush 0)
 # Import pico_stdlib which imports commonly used features
 target_link_libraries(PhoneHush PUBLIC pico_stdlib pico_unique_id tinyusb_device
-  tinyusb_board pico_multicore hardware_pio hardware_spi hardware_i2c hardware_dma)
+        tinyusb_board pico_multicore hardware_pio hardware_spi hardware_i2c hardware_dma hardware_pwm)
 
 # Create map/bin/hex file etc.
 pico_add_extra_outputs(PhoneHush)

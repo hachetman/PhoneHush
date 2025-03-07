@@ -1,5 +1,7 @@
 #include "GC9A01A.h"
 #include "pico/stdlib.h"
+#include "hardware/pwm.h"
+
 #include "hardware/spi.h"
 
 
@@ -47,9 +49,14 @@ auto GC9A01A::init(void) -> uint
     gpio_init(CS_PIN);
     gpio_set_dir(CS_PIN, GPIO_OUT);
 
-    gpio_init(BL_PIN);
-    gpio_set_dir(BL_PIN, GPIO_OUT);
-    gpio_put(BL_PIN, true);
+
+    gpio_set_function(BL_PIN, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(BL_PIN);
+    pwm_set_wrap(slice_num, 3);
+    pwm_set_chan_level(slice_num, PWM_CHAN_B, 2);
+
+    pwm_set_enabled(slice_num, true);
+
     set_chip_select(1);
     delay(5);
     set_reset(0);
