@@ -92,7 +92,11 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
     (void) report_type;
     (void) buffer;
     (void) reqlen;
-
+    char buffer2[80];
+    snprintf(buffer2, 80, "got a report request, report_type: %d, report_id %d, len: %x buff %x:\r\n", report_type,
+             report_id,
+             reqlen, buffer[0]);
+    serial_print(buffer2);
     return 0;
 }
 
