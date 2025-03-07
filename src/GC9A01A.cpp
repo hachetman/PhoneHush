@@ -31,8 +31,8 @@ auto GC9A01A::write_byte(uint8_t val) -> void
 
 auto GC9A01A::init(void) -> uint
 {
-    // It seem it is rounded to the next possible lower value,
-    // so 63 MHZ result in 62.5 MHz SPI freuqency at 125 MHz
+    // It seems it is rounded to the next possible lower value,
+    // so 63 MHZ result in 62.5 MHz SPI frequency at 125 MHz
     // clock frequency and the clk_peri configured to be the
     // sys_clk
     uint retval = spi_init(SPI_PORT, 63 * 1000 * 1000);
