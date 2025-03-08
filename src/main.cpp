@@ -110,39 +110,35 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
              buffer[0], bufsize);
     serial_print(buffer2);
     if ((report_id == 36) && (*buffer == 1)) {
-        in_call = true;
+        display.fill_rect(in_call_image, 0, 0, 240, 240);
+        if (mic_muted) {
+            display.fill_rect(mic_muted_image, 0, 120, 240, 120);
+            display.update_display();
+        } else {
+            display.fill_rect(mic_image, 0, 120, 240, 120);
+            display.update_display();
+        }
         uint8_t report = 0;
         tud_hid_report(0x20, &report, 1);
     }
     if ((report_id == 36) && (*buffer == 0)) {
-        in_call = false;
+        display.fill_rect(free_image, 0, 0, 240, 240);
+        display.update_display();
         uint8_t report = 0;
         tud_hid_report(0x20, &report, 1);
 
     }
     if (report_id == 35) {
         if (*buffer == 1) {
+            display.fill_rect(mic_muted_image, 0, 120, 240, 120);
+            display.update_display();
             mic_muted = true;
         } else {
+            display.fill_rect(mic_image, 0, 120, 240, 120);
+            display.update_display();
             mic_muted = false;
         }
     }
-    if (in_call) {
-        display.fill_rect(in_call_image, 0, 0, 240, 240);
-        display.update_display();
-        if (mic_muted) {
-            display.fill_rect(mic_muted_image, 35, 120, 170, 85);
-            display.update_display();
-        } else {
-            display.fill_rect(mic_image, 35, 120, 170, 85);
-            display.update_display();
-        }
-    } else {
-        display.fill_rect(free_image, 0, 0, 240, 240);
-        display.update_display();
-
-    }
-
 
 }
 
