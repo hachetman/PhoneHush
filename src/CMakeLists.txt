@@ -1,18 +1,18 @@
 add_executable(PhoneHush)
 
 target_sources(PhoneHush PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR}/main.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/usb_descriptors.c
-  ${CMAKE_CURRENT_LIST_DIR}/GC9A01A.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/CST816S.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/main.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/usb_descriptors.c
+        ${CMAKE_CURRENT_LIST_DIR}/GC9A01A.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/CST816S.cpp
 )
 
- # print memory usage, enable all warnings
+# print memory usage, enable all warnings
 target_link_options(PhoneHush PRIVATE -Xlinker --print-memory-usage)
 target_compile_options(PhoneHush PRIVATE -Wall -Wextra)
 # Make sure TinyUSB can find tusb_config.h
 target_include_directories(PhoneHush PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR})
+        ${CMAKE_CURRENT_LIST_DIR})
 
 pico_enable_stdio_usb(PhoneHush 0)
 pico_enable_stdio_uart(PhoneHush 0)
